@@ -1,0 +1,307 @@
+
+:host {
+  display: block;
+  color: #1e293b;
+}
+
+.offres-page {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.surtitle {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+h1 {
+  margin: 8px 0;
+  font-size: 30px;
+}
+
+.subtitle {
+  color: #64748b;
+  margin: 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.stat-card,
+.offre-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px;
+}
+
+.stat-card span,
+.experience span {
+  display: block;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 28px;
+  margin-top: 10px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.toolbar input {
+  flex: 1;
+}
+
+input,
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+  background: #fff;
+}
+
+input:focus,
+textarea:focus {
+  outline: 2px solid #93c5fd;
+  border-color: #2563eb;
+}
+
+.offres-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.offre-card {
+  min-width: 0;
+}
+
+.offre-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.domaine {
+  color: #1d4ed8;
+  background: #eff6ff;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.offre-id {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.offre-card h2 {
+  font-size: 20px;
+  margin: 18px 0 10px;
+}
+
+.description {
+  color: #64748b;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.experience {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+  margin-top: 20px;
+}
+
+.experience strong {
+  display: block;
+  margin-top: 6px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 12px 22px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.20);
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 7px 16px rgba(37, 99, 235, 0.30);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.20);
+}
+
+.btn-primary:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.35);
+  outline-offset: 3px;
+}
+
+@media (max-width: 576px) {
+  .btn-primary {
+    width: 100%;
+    padding: 12px 16px;
+  }
+}
+
+
+.btn-secondary {
+  color: #334155;
+  background: #e2e8f0;
+}
+
+.btn-danger {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.message,
+.empty-state {
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+}
+
+.error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+  background: rgb(15 23 42 / 55%);
+}
+
+.modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  background: #fff;
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.modal form {
+  display: grid;
+  gap: 10px;
+}
+
+.modal label {
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+@media (max-width: 760px) {
+  .offres-page {
+    padding: 18px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .stats,
+  .offres-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    flex-direction: column;
+  }
+}

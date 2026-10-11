@@ -1,0 +1,68 @@
+
+<div class="page-container">
+  <header class="page-header">
+        <div>
+        <p class="eyebrow">SMARTRECRUITER / OFFRES</p>
+        <h1>Créer une offre d'emploi</h1>
+        <p>Définissez le poste et les compétences recherchées.</p>
+        </div>
+        <a href="/offres" class="btn-secondary">Retour aux offres</a>
+  </header>
+
+    <form class="offer-form" #offreForm="ngForm" (ngSubmit)="creerOffre(offreForm)">
+        <section class="form-section">
+        <h2>Informations générales</h2>
+
+        <label for="titre">Titre du poste *</label>
+        <input
+            id="titre"
+            name="titre"
+            [(ngModel)]="offre.titre"
+            required
+            placeholder="Ex. Technicien support informatique"
+             />
+
+        <label for="domaine">Domaine *</label>
+        <input
+            id="domaine"
+            name="domaine"
+            [(ngModel)]="offre.domaine"
+            required
+            placeholder="Ex. Réseaux et systèmes"
+             
+        />
+
+        <label for="description">Description du poste *</label>
+        <textarea
+            id="description"
+            name="description"
+            [(ngModel)]="offre.description"
+            required
+            maxlength="5000"
+            rows="6"
+            placeholder="Décrivez les missions et les responsabilités..."
+         ></textarea>
+
+        <label for="experienceMin">Expérience minimale (années) *</label>
+        <input
+            id="experienceMin"
+            name="experienceMin"
+            type="number"
+            [(ngModel)]="offre.experienceMin"
+            min="0"
+            step="1"
+            
+        />
+        </section>
+
+        <div *ngIf="message" class="success-message">{{ message }}</div>
+        <div *ngIf="erreur" class="error-message">{{ erreur }}</div>
+
+        <footer class="form-actions" >
+            <a routerLink="/offres" class="btn-secondary">Annuler</a>
+           <button type="submit" [disabled]="enCours">
+                {{ enCours ? 'Création en cours...' : 'Créer l’offre' }}
+            </button>
+        </footer>
+    </form>
+</div>

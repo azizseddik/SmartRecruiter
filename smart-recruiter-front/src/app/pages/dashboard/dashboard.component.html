@@ -1,0 +1,123 @@
+
+<div class="dashboard">
+
+  <section class="welcome">
+    <div>
+      <span class="eyebrow">VOTRE ESPACE DE TRAVAIL</span>
+      <h2>Bonjour, bienvenue sur SmartRecruiter 👋</h2>
+      <p>Suivez votre recrutement et identifiez les meilleurs profils grâce au matching intelligent.</p>
+    </div>
+
+    <div class="welcome-icon">✦</div>
+  </section>
+
+  <section class="stats-grid">
+    @for (stat of statistiques; track stat.titre) {
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-title">{{ stat.titre }}</span>
+          <span class="stat-icon" [class]="stat.couleur">
+            @switch (stat.icone) {
+              @case ('users') { ♙ }
+              @case ('briefcase') { ▣ }
+              @case ('file') { ▤ }
+              @case ('target') { ◎ }
+            }
+          </span>
+        </div>
+
+        <div class="stat-bottom">
+          <strong>{{ stat.valeur }}</strong>
+          <span class="variation">{{ stat.variation }}</span>
+        </div>
+
+        <span class="stat-note">Par rapport à la période précédente</span>
+      </article>
+    }
+  </section>
+
+  <section class="content-grid">
+
+    <article class="panel candidates-panel">
+      <div class="panel-heading">
+        <div>
+          <h3>Candidats récents</h3>
+          <p>Les derniers profils ajoutés à votre espace</p>
+        </div>
+        <a routerLink="/candidats">Voir tous →</a>
+      </div>
+
+      <div class="candidate-list">
+        @for (candidat of candidatsRecents; track candidat.nom) {
+          <div class="candidate-row">
+            <div class="candidate-avatar" [class]="candidat.couleur">
+              {{ candidat.initiales }}
+            </div>
+
+            <div class="candidate-info">
+              <strong>{{ candidat.nom }}</strong>
+              <span>{{ candidat.poste }}</span>
+              <small>{{ candidat.competences }}</small>
+            </div>
+
+            <div class="candidate-score">
+              <strong>{{ candidat.score }}%</strong>
+              <span>Match</span>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel quick-panel">
+      <div class="panel-heading">
+        <div>
+          <h3>Actions rapides</h3>
+          <p>Accédez aux fonctionnalités principales</p>
+        </div>
+      </div>
+
+      <a class="quick-action" routerLink="/candidats">
+        <span class="action-icon blue">＋</span>
+        <span>
+          <strong>Gérer les candidats</strong>
+          <small>Consulter et rechercher les profils</small>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+
+      <a class="quick-action" routerLink="/offres">
+        <span class="action-icon purple">▣</span>
+        <span>
+          <strong>Créer une offre</strong>
+          <small>Définir un nouveau besoin de recrutement</small>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+
+      <a class="quick-action" routerLink="/matching">
+        <span class="action-icon green">✧</span>
+        <span>
+          <strong>Lancer le matching IA</strong>
+          <small>Comparer les profils aux offres</small>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+    </article>
+
+  </section>
+
+  <section class="info-banner">
+    <div class="info-symbol">✦</div>
+    <div>
+      <strong>Le recrutement intelligent commence ici</strong>
+      <p>SmartRecruiter compare les compétences, l'expérience et le domaine des candidats avec les besoins des offres.</p>
+    </div>
+    <a routerLink="/matching">Voir le matching →</a>
+  </section>
+
+  <p class="demo-note">
+    Données de démonstration — elles seront remplacées par les données du backend.
+  </p>
+
+</div>

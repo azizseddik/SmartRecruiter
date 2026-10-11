@@ -1,0 +1,100 @@
+
+<div class="candidats-page">
+  <section class="page-heading">
+    <div>
+      <span class="eyebrow">GESTION DES TALENTS</span>
+      <h2>Candidats</h2>
+      <p>Consultez et recherchez les profils enregistrés dans SmartRecruiter.</p>
+    </div>
+
+    <button class="refresh-button" (click)="chargerCandidats()">
+      ↻ Actualiser
+    </button>
+  </section>
+
+  <section class="summary-card">
+    <div class="summary-icon">♙</div>
+    <div>
+      <span>Total des candidats affichés</span>
+      <strong>{{ candidats.length }}</strong>
+    </div>
+  </section>
+
+  <section class="table-panel">
+    <div class="table-toolbar">
+      <div>
+        <h3>Liste des candidats</h3>
+        <p>Les données proviennent de l'API Spring Boot.</p>
+      </div>
+
+      <form class="search-form" (ngSubmit)="rechercher()">
+        <input
+          type="text"
+          name="recherche"
+          [(ngModel)]="recherche"
+          placeholder="Rechercher un candidat..."
+          aria-label="Rechercher un candidat"
+        />
+
+        <button type="submit">Rechercher</button>
+
+        @if (recherche) {
+          <button type="button" class="clear-button" (click)="reinitialiserRecherche()">
+            Effacer
+          </button>
+        }
+      </form>
+    </div>
+
+    @if (chargement) {
+      <div class="message-state">Chargement des candidats...</div>
+    } @else if (erreur) {
+      <div class="message-state error-state">
+        {{ erreur }}
+        <button type="button" (click)="chargerCandidats()">Réessayer</button>
+      </div>
+    } @else if (candidats.length === 0) {
+      <div class="message-state">
+        Aucun candidat trouvé. Vérifiez votre recherche ou importez un CV.
+      </div>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Candidat</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th>Domaine</th>
+              <th>Expérience</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (candidat of candidats; track candidat.id) {
+              <tr>
+                <td>
+                  <div class="candidate-cell">
+                    <div class="avatar">
+                      {{ candidat.nom ? candidat.nom.charAt(0).toUpperCase() : '?' }}
+                    </div>
+                    <div>
+                      <strong>{{ candidat.nom || 'Sans nom' }}</strong>
+                      <small>ID : {{ candidat.id }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ candidat.email || '—' }}</td>
+                <td>{{ candidat.telephone || '—' }}</td>
+                <td>
+                  <span class="domain-tag">{{ candidat.domaine || 'Non renseigné' }}</span>
+                </td>
+                <td>{{ candidat.experience ?? 0 }} an(s)</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

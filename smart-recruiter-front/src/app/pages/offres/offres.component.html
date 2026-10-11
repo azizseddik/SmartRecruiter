@@ -1,0 +1,106 @@
+
+<div class="offres-page">
+
+  <!-- En-tête -->
+  <header class="page-header">
+    <div>
+      <p class="surtitle">SMARTRECRUITER / RECRUTEMENT</p>
+      <h1>Gestion des offres</h1>
+      <p class="subtitle">
+        Gérez les offres d'emploi et les besoins en compétences.
+      </p>
+    </div>
+
+  <a link rel="stylesheet" href="/offres/ajouter" class="btn-primary"> <span aria-hidden="true">+</span>
+  Nouvelle offre </a>
+ 
+
+  </header>
+
+  <!-- Statistiques -->
+  <section class="stats">
+    <div class="stat-card">
+      <span>Total des offres</span>
+      <strong>{{ offres.length }}</strong>
+    </div>
+
+    <div class="stat-card">
+      <span>Résultats affichés</span>
+      <strong>{{ offresFiltrees.length }}</strong>
+    </div>
+  </section>
+
+  <!-- Recherche -->
+  <section class="toolbar">
+    <input
+      type="search"
+      [(ngModel)]="recherche"
+      placeholder="Rechercher par titre ou domaine..."
+      aria-label="Rechercher une offre">
+
+    <button
+      type="button"
+      class="btn-secondary"
+      (click)="chargerOffres()">
+      Actualiser
+    </button>
+  </section>
+
+  <!-- Erreurs -->
+  <div class="message error" *ngIf="erreur">
+    {{ erreur }}
+  </div>
+
+  <div class="message" *ngIf="chargement">
+    Chargement des offres...
+  </div>
+
+  <!-- Liste des offres -->
+  <section class="offres-grid" *ngIf="!chargement">
+
+    <article
+      class="offre-card"
+      *ngFor="let offre of offresFiltrees">
+
+      <div class="offre-top">
+        <span class="domaine">{{ offre.domaine }}</span>
+        <span class="offre-id" *ngIf="offre.id">
+          #{{ offre.id }}
+        </span>
+      </div>
+
+      <h2>{{ offre.titre }}</h2>
+
+      <p class="description">
+        {{ offre.description || 'Aucune description disponible.' }}
+      </p>
+
+      <div class="experience">
+        <span>Expérience minimale</span>
+        <strong>{{ offre.experienceMin }} an(s)</strong>
+      </div>
+
+      <div class="card-actions">
+        <button
+          type="button"
+          class="btn-danger"
+          (click)="supprimerOffre(offre)"
+          [disabled]="offre.id == null">
+          Supprimer
+        </button>
+      </div>
+
+    </article>
+
+    <!-- Aucune offre -->
+    <div
+      class="empty-state"
+      *ngIf="offresFiltrees.length === 0 && !erreur">
+
+      <h2>Aucune offre trouvée</h2>
+      <p>Essayez une autre recherche ou créez une nouvelle offre.</p>
+    </div>
+
+  </section>
+</div>
+```

@@ -1,0 +1,39 @@
+/* You can add global styles to this file, and also import other style files */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  color: #111827;
+  background: #f5f7fb;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .app-layout app-sidebar {
+    flex-basis: auto;
+  }
+
+  .app-layout app-sidebar .sidebar {
+    position: static;
+    height: auto;
+  }
+}

@@ -1,0 +1,174 @@
+<div class="matching-page">
+
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">SMARTRECRUITER / RECRUTEMENT</p>
+      <h1>Matching intelligent</h1>
+      <p>
+        Classez les candidats selon leur compatibilité avec une offre.
+      </p>
+    </div>
+  </header>
+
+  <section class="search-card">
+    <h2>Rechercher les meilleurs candidats</h2>
+
+    <form (ngSubmit)="chargerClassement()">
+      <label for="offreId">Identifiant de l’offre</label>
+
+      <div class="search-row">
+        <input
+          id="offreId"
+          name="offreId"
+          type="number"
+          min="1"
+          step="1"
+          [(ngModel)]="offreId"
+          required
+          placeholder="Ex. 1"
+        />
+
+        <button
+          type="submit"
+          [disabled]="chargement"
+          class="btn-primary"
+        >
+          {{
+            chargement
+              ? 'Analyse en cours...'
+              : 'Analyser les candidats'
+          }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <div *ngIf="erreur" class="error-message">
+    {{ erreur }}
+  </div>
+
+  <section
+    *ngIf="rechercheEffectuee"
+    class="results-section"
+  >
+    <div class="results-header">
+      <div>
+        <h2>Classement des candidats</h2>
+        <p>
+          Offre n° {{ offreId }} ·
+          {{ resultats.length }} candidat(s)
+        </p>
+      </div>
+    </div>
+
+    <div
+      *ngIf="resultats.length === 0"
+      class="empty-state"
+    >
+      <h3>Aucun candidat trouvé</h3>
+      <p>
+        Aucun candidat n’est actuellement disponible pour cette offre.
+      </p>
+    </div>
+
+    <article
+      *ngFor="
+        let candidat of resultats;
+        let i = index;
+        trackBy: trackByCandidat
+      "
+      class="candidate-card"
+    >
+      <div class="candidate-top">
+        <div class="candidate-identity">
+          <div class="candidate-avatar">
+            {{ i + 1 }}
+          </div>
+
+          <div>
+            <h3>Candidat #{{ candidat.candidatId }}</h3>
+            <p>{{ candidat.resultat }}</p>
+          </div>
+        </div>
+
+        <div class="score-block">
+          <strong>{{ candidat.score | number:'1.0-2' }}%</strong>
+          <span>Compatibilité</span>
+        </div>
+      </div>
+
+      <div class="progress-track">
+        <div
+          class="progress-value"
+          [ngClass]="getClasseScore(candidat.score)"
+          [style.width.%]="
+            candidat.score < 0
+              ? 0
+              : candidat.score > 100
+                ? 100
+                : candidat.score
+          "
+        ></div>
+      </div>
+
+      <div class="skills-grid">
+
+        <section class="skills-column">
+          <h4>
+            <span class="skill-dot success"></span>
+            Compétences satisfaites
+            ({{ candidat.competencesSatisfaites?.length ?? 0 }})
+          </h4>
+
+          <div
+            *ngIf="
+              !candidat.competencesSatisfaites?.length
+            "
+            class="no-skills"
+          >
+            Aucune compétence satisfaite identifiée.
+          </div>
+
+          <div class="skill-list">
+            <span
+              *ngFor="
+                let skill of candidat.competencesSatisfaites
+              "
+              class="skill-tag skill-success"
+            >
+              ✓ {{ skill }}
+            </span>
+          </div>
+        </section>
+
+        <section class="skills-column">
+          <h4>
+            <span class="skill-dot missing"></span>
+            Compétences manquantes
+           ({{ candidat.competencesManquantes.length }})
+          </h4>
+
+       <div
+  *ngIf="!candidat.competencesManquantes?.length"
+  class="no-skills"
+>
+  Aucune compétence manquante identifiée.
+</div>
+
+          <div class="skill-list">
+            <span
+              *ngFor="
+                let skill of candidat.competencesManquantes
+              "
+              class="skill-tag skill-missing"
+            >
+              {{ skill }}
+            </span>
+          </div>
+        </section>
+
+      </div>
+    </article>
+  </section>
+
+</div>
