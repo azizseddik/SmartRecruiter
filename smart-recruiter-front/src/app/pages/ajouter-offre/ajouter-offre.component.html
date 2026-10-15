@@ -9,7 +9,7 @@
         <a href="/offres" class="btn-secondary">Retour aux offres</a>
   </header>
 
-    <form class="offer-form" #offreForm="ngForm" (ngSubmit)="creerOffre(offreForm)">
+    <form class="offer-form" #offreForm="ngForm" (ngSubmit)="onSubmit(offreForm)" novalidate>
         <section class="form-section">
         <h2>Informations générales</h2>
 
@@ -60,9 +60,10 @@
 
         <footer class="form-actions" >
             <a routerLink="/offres" class="btn-secondary">Annuler</a>
-           <button type="submit" [disabled]="enCours">
-                {{ enCours ? 'Création en cours...' : 'Créer l’offre' }}
-            </button>
+             <button type="submit" [disabled]="enCours" class="btn-secondary"> 
+    {{ enCours ? 'Création en cours...' : 'Créer l’offre' }} 
+  </button>
+
         </footer>
     </form>
 </div>

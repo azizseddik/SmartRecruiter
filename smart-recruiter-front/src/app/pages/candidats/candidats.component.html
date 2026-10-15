@@ -1,26 +1,312 @@
-
 <div class="candidats-page">
+
+  <!-- EN-TÊTE -->
   <section class="page-heading">
     <div>
       <span class="eyebrow">GESTION DES TALENTS</span>
       <h2>Candidats</h2>
-      <p>Consultez et recherchez les profils enregistrés dans SmartRecruiter.</p>
+      <p>
+        Consultez les profils, importez des CV et classez les candidats
+        selon les besoins de chaque offre.
+      </p>
     </div>
 
-    <button class="refresh-button" (click)="chargerCandidats()">
+    <button
+      type="button"
+      class="refresh-button"
+      (click)="chargerCandidats()"
+      [disabled]="chargement"
+    >
       ↻ Actualiser
     </button>
   </section>
 
+  <!-- IMPORTATION D'UN CV -->
+  <section class="import-panel">
+    <div class="section-title">
+      <span class="eyebrow">IMPORTATION INTELLIGENTE</span>
+      <h3>Importer un CV PDF</h3>
+      <p>
+        Sélectionnez une offre et importez le CV pour créer une candidature
+        et évaluer la compatibilité du profil.
+      </p>
+    </div>
+
+    <form class="import-form" (ngSubmit)="importerCV()">
+
+      <div class="form-field">
+        <label for="offreId">Offre de recrutement</label>
+
+        <select
+          id="offreId"
+          name="offreId"
+          [(ngModel)]="offreIdSelectionnee"
+          (ngModelChange)="chargerClassement()"
+          required
+        >
+          <option [ngValue]="null">
+            Sélectionner une offre
+          </option>
+
+          @for (offre of offres; track offre.id) {
+            <option [ngValue]="offre.id">
+              {{ offre.titre }} — #{{ offre.id }}
+            </option>
+          }
+        </select>
+
+        @if (chargementOffres) {
+          <small>Chargement des offres...</small>
+        }
+
+        @if (erreurOffres) {
+          <small class="error-text">{{ erreurOffres }}</small>
+
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="chargerOffres()"
+          >
+            Réessayer
+          </button>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="fichierCV">CV du candidat (PDF, 10 Mo maximum)</label>
+
+        <input
+          id="fichierCV"
+          name="fichierCV"
+          type="file"
+          accept=".pdf,application/pdf"
+          (change)="selectionnerFichier($event)"
+          required
+        />
+
+        @if (fichierCV) {
+          <small>Fichier sélectionné : {{ fichierCV.name }}</small>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="import-button"
+        [disabled]="
+          importEnCours ||
+          chargementOffres ||
+          offres.length === 0
+        "
+      >
+        @if (importEnCours) {
+          Analyse et importation en cours...
+        } @else {
+          Importer et classer le CV
+        }
+      </button>
+
+    </form>
+
+    @if (erreurImport) {
+      <div class="feedback feedback-error" role="alert">
+        {{ erreurImport }}
+      </div>
+    }
+
+    @if (messageImport) {
+      <div class="feedback feedback-success" role="status">
+        {{ messageImport }}
+      </div>
+    }
+  </section>
+
+  <!-- RÉSUMÉ DES CANDIDATS -->
   <section class="summary-card">
     <div class="summary-icon">♙</div>
+
     <div>
       <span>Total des candidats affichés</span>
       <strong>{{ candidats.length }}</strong>
     </div>
   </section>
 
+  <!-- CLASSEMENT INTELLIGENT -->
+  <section class="table-panel ranking-panel">
+
+    <div class="table-toolbar">
+      <div>
+        <span class="eyebrow">MATCHING</span>
+        <h3>Classement intelligent</h3>
+        <p>
+          Les candidats sont classés selon leur score de compatibilité
+          avec l'offre sélectionnée.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="refresh-button"
+        (click)="chargerClassement()"
+        [disabled]="offreIdSelectionnee === null || chargementClassement"
+      >
+        ↻ Actualiser le classement
+      </button>
+    </div>
+
+    @if (offreIdSelectionnee === null) {
+      <div class="message-state">
+        Sélectionnez une offre pour afficher son classement.
+      </div>
+    } @else if (chargementClassement) {
+      <div class="message-state">
+        Calcul du classement...
+      </div>
+    } @else if (erreurClassement) {
+      <div class="message-state error-state">
+        {{ erreurClassement }}
+
+        <button
+          type="button"
+          (click)="chargerClassement()"
+        >
+          Réessayer
+        </button>
+      </div>
+    } @else if (classement.length === 0) {
+      <div class="message-state">
+        Aucun résultat de matching pour cette offre.
+      </div>
+    } @else {
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Rang</th>
+              <th>Candidat</th>
+              <th>Score</th>
+              <th>Évaluation</th>
+              <th>Compétences satisfaites</th>
+              <th>Compétences manquantes</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (resultat of classement; track resultat.candidatId) {
+              <tr>
+                <td>
+                  <strong>#{{ $index + 1 }}</strong>
+                </td>
+
+                <td>
+                  <strong>
+                    {{ getNomCandidat(resultat.candidatId) }}
+                  </strong>
+
+                  <small class="candidate-id">
+                    ID : {{ resultat.candidatId }}
+                  </small>
+                </td>
+
+                <td>
+                  <span
+                    class="score-badge"
+                    [ngClass]="getClasseScore(resultat.score)"
+                  >
+                    {{ resultat.score }} %
+                  </span>
+                </td>
+
+                <td>{{ resultat.resultat }}</td>
+
+                <td>
+                  @if (resultat.competencesSatisfaites?.length) {
+                    <div class="skill-list">
+                      @for (
+                        skill of resultat.competencesSatisfaites;
+                        track skill
+                      ) {
+                        <span class="skill-tag skill-ok">
+                          {{ skill }}
+                        </span>
+                      }
+                    </div>
+                  } @else {
+                    <span>—</span>
+                  }
+                </td>
+
+                <td>
+                  @if (resultat.competencesManquantes?.length) {
+                    <div class="skill-list">
+                      @for (
+                        skill of resultat.competencesManquantes;
+                        track skill
+                      ) {
+                        <span class="skill-tag skill-missing">
+                          {{ skill }}
+                        </span>
+                      }
+                    </div>
+                  } @else {
+                    <span>—</span>
+                  }
+                </td>
+
+                <!-- STATUT DE LA CANDIDATURE -->
+                <td>
+                  @if (getCandidature(resultat.candidatId); as candidature) {
+                    <span
+                      class="statut-tag"
+                      [ngClass]="'statut-' + candidature.statut.toLowerCase()"
+                    >
+                      {{ getLibelleStatut(candidature.statut) }}
+                    </span>
+                  } @else {
+                    <span>—</span>
+                  }
+                </td>
+
+                <!-- ACTIONS : ACCEPTER / REJETER -->
+                <td>
+                  @if (getCandidature(resultat.candidatId); as candidature) {
+                    <div class="status-actions">
+                      <button
+                        type="button"
+                        class="status-button accept-button"
+                        (click)="modifierStatut(candidature.id, 'ACCEPTEE')"
+                        [disabled]="candidature.statut === 'ACCEPTEE'"
+                      >
+                        Accepter
+                      </button>
+
+                      <button
+                        type="button"
+                        class="status-button reject-button"
+                        (click)="modifierStatut(candidature.id, 'REJETEE')"
+                        [disabled]="candidature.statut === 'REJETEE'"
+                      >
+                        Rejeter
+                      </button>
+                    </div>
+                  } @else {
+                    <span>—</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+    }
+  </section>
+
+  <!-- RECHERCHE ET LISTE DES CANDIDATS -->
   <section class="table-panel">
+
     <div class="table-toolbar">
       <div>
         <h3>Liste des candidats</h3>
@@ -36,10 +322,16 @@
           aria-label="Rechercher un candidat"
         />
 
-        <button type="submit">Rechercher</button>
+        <button type="submit">
+          Rechercher
+        </button>
 
         @if (recherche) {
-          <button type="button" class="clear-button" (click)="reinitialiserRecherche()">
+          <button
+            type="button"
+            class="clear-button"
+            (click)="reinitialiserRecherche()"
+          >
             Effacer
           </button>
         }
@@ -47,17 +339,26 @@
     </div>
 
     @if (chargement) {
-      <div class="message-state">Chargement des candidats...</div>
+      <div class="message-state">
+        Chargement des candidats...
+      </div>
     } @else if (erreur) {
       <div class="message-state error-state">
         {{ erreur }}
-        <button type="button" (click)="chargerCandidats()">Réessayer</button>
+
+        <button
+          type="button"
+          (click)="chargerCandidats()"
+        >
+          Réessayer
+        </button>
       </div>
     } @else if (candidats.length === 0) {
       <div class="message-state">
         Aucun candidat trouvé. Vérifiez votre recherche ou importez un CV.
       </div>
     } @else {
+
       <div class="table-scroll">
         <table>
           <thead>
@@ -76,25 +377,37 @@
                 <td>
                   <div class="candidate-cell">
                     <div class="avatar">
-                      {{ candidat.nom ? candidat.nom.charAt(0).toUpperCase() : '?' }}
+                      {{
+                        candidat.nom
+                          ? candidat.nom.charAt(0).toUpperCase()
+                          : '?'
+                      }}
                     </div>
+
                     <div>
                       <strong>{{ candidat.nom || 'Sans nom' }}</strong>
                       <small>ID : {{ candidat.id }}</small>
                     </div>
                   </div>
                 </td>
+
                 <td>{{ candidat.email || '—' }}</td>
                 <td>{{ candidat.telephone || '—' }}</td>
+
                 <td>
-                  <span class="domain-tag">{{ candidat.domaine || 'Non renseigné' }}</span>
+                  <span class="domain-tag">
+                    {{ candidat.domaine || 'Non renseigné' }}
+                  </span>
                 </td>
+
                 <td>{{ candidat.experience ?? 0 }} an(s)</td>
               </tr>
             }
           </tbody>
         </table>
       </div>
+
     }
   </section>
+
 </div>

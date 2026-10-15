@@ -2,7 +2,7 @@ package SmartRecruiter.example.SmartRecruiter.SmartRecture.Controller;
 import SmartRecruiter.example.SmartRecruiter.Dto.AnalyseCVResponseDTO;
 import SmartRecruiter.example.SmartRecruiter.Dto.CandidatImportResponseDTO;
 import SmartRecruiter.example.SmartRecruiter.service.AnalyseCVService;
-
+import SmartRecruiter.example.SmartRecruiter.Dto.ImportCandidatureResponseDTO;
 import SmartRecruiter.example.SmartRecruiter.service.CandidatImportService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +20,24 @@ public class AnalyseCVController {
 
         this.analyseCVService = analyseCVService;
         this.candidatImportService = candidatImportService;
+    }
+
+    @PostMapping(
+            value = "/importer-candidature",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ImportCandidatureResponseDTO>
+    importerCVPourOffre(
+            @RequestParam("file") MultipartFile fichier,
+            @RequestParam("offreId") Long offreId) {
+
+        ImportCandidatureResponseDTO resultat =
+                candidatImportService.importerCVPourOffre(
+                        fichier,
+                        offreId
+                );
+
+        return ResponseEntity.ok(resultat);
     }
 
     @PostMapping(

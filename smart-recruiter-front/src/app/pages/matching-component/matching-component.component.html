@@ -86,9 +86,15 @@
           </div>
 
           <div>
-            <h3>Candidat #{{ candidat.candidatId }}</h3>
-            <p>{{ candidat.resultat }}</p>
-          </div>
+  <ng-container *ngIf="getCandidat(candidat.candidatId) as c; else inconnu">
+    <h3>{{ c.prenom }} {{ c.nom }}</h3>
+    <p class="candidate-contact">{{ c.email }} · {{ c.telephone }}</p>
+  </ng-container>
+  <ng-template #inconnu>
+    <h3>Candidat #{{ candidat.candidatId }}</h3>
+  </ng-template>
+  <p>{{ candidat.resultat }}</p>
+</div>
         </div>
 
         <div class="score-block">
@@ -117,7 +123,7 @@
           <h4>
             <span class="skill-dot success"></span>
             Compétences satisfaites
-            ({{ candidat.competencesSatisfaites?.length ?? 0 }})
+            ({{ candidat.competencesManquantes?.length ?? 0 }})
           </h4>
 
           <div

@@ -23,10 +23,17 @@ public class Offre {
 
     @OneToMany(mappedBy = "offre", cascade = CascadeType.ALL)
     private List<OffreSkill> skills = new ArrayList<>();
-
+    @OneToMany(mappedBy = "offre", cascade = CascadeType.ALL)
+    private List<Candidature> candidatures = new ArrayList<>();
     public Offre() {
     }
+    public List<Candidature> getCandidatures() {
+        return candidatures;
+    }
 
+    public void setCandidatures(List<Candidature> candidatures) {
+        this.candidatures = candidatures;
+    }
     public Long getId() {
         return id;
     }

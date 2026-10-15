@@ -7,7 +7,9 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>4.1.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
+
 	</parent>
+
 	<groupId>SmartRecruiter.example</groupId>
 	<artifactId>SmartRecruiter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -42,6 +44,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

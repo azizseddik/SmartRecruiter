@@ -1,15 +1,28 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
+export type StatutCandidature = 'EN_ATTENTE' | 'ACCEPTEE' | 'REJETEE';
+
 export interface Candidat {
   id: number;
   nom: string;
+  statut: StatutCandidature;
   email?: string;
   telephone?: string;
   domaine?: string;
   experience?: number;
 }
 
+
+export interface Candidature {
+  id: number;
+  candidatId: number;
+  offreId: number;
+  statut: StatutCandidature;
+  scoreMatching: number | null;
+  titreOffre: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -33,8 +46,20 @@ export class CandidatService {
       { params }
     );
   }
+  getCandidaturesParOffre(offreId: number): Observable<Candidature[]> {
+  return this.http.get<Candidature[]>(
+    `http://localhost:8082/api/candidatures/offre/${offreId}`
+  );
+}
 
   supprimerCandidat(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+modifierStatut(id: number, statut: StatutCandidature): Observable<Candidature> {
+  return this.http.patch<Candidature>(
+    `http://localhost:8082/api/candidatures/${id}/statut`,
+    { statut }
+  );
+}
+
 }

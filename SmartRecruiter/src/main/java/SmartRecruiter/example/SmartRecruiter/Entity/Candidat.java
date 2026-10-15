@@ -12,7 +12,15 @@ public class Candidat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL)
+    private List<Candidature> candidatures = new ArrayList<>();
+    public List<Candidature> getCandidatures() {
+        return candidatures;
+    }
 
+    public void setCandidatures(List<Candidature> candidatures) {
+        this.candidatures = candidatures;
+    }
     private String nom;
 
     private String email;

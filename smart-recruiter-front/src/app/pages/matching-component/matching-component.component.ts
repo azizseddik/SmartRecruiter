@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component ,OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
@@ -11,14 +11,23 @@ interface MatchingResponse {
   competencesSatisfaites: string[];
   competencesManquantes: string[];
 }
+interface Candidat {
+  id: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+}
 @Component({
   selector: 'app-matching-component',
   imports: [CommonModule, FormsModule],
   templateUrl: './matching-component.component.html',
   styleUrl: './matching-component.component.css'
 })
-export class MatchingComponentComponent {
+export class MatchingComponentComponent implements OnInit {
  private readonly apiUrl = 'http://localhost:8082/api/matching';
+ private readonly candidatsUrl = 'http://localhost:8082/api/candidats';
+   candidatsParId = new Map<number, Candidat>();
 
   offreId: number | null = null;
 
@@ -29,6 +38,17 @@ export class MatchingComponentComponent {
   rechercheEffectuee = false;
 
   constructor(private http: HttpClient) {}
+  ngOnInit(): void {
+    this.http.get<Candidat[]>(this.candidatsUrl).subscribe({
+      next: (liste) => {
+        this.candidatsParId = new Map(liste.map((c) => [c.id, c]));
+      },
+      error: (err) => console.error('Chargement des candidats impossible :', err)
+    });
+  }
+   getCandidat(id: number): Candidat | undefined {
+    return this.candidatsParId.get(id);
+  }
 
   chargerClassement(): void {
     this.erreur = '';

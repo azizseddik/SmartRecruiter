@@ -27,7 +27,7 @@ interface Offre {
   styleUrl: './ajouter-offre.component.css'
 })
 export class AjouterOffreComponent {
-  private  apiUrl = 'http://localhost:8082/api/offres';
+  private   apiUrl = 'http://localhost:8082/api/offres';
 
   offre: OffreRequest = {
     titre: '',
@@ -43,99 +43,124 @@ export class AjouterOffreComponent {
   constructor(
     private http: HttpClient,
     private router: Router
-  ) {}
+  ) { console.log('AjouterOffreComponent chargé');}
 
-creerOffre(form: NgForm): Observable<string> {
-  this.erreur = '';
-  this.message = '';
-   console.log('1. creerOffre() appelée');
-  console.log('2. Formulaire valide :', form.valid);
-  console.log('3. Données offre :', this.offre);
-  console.log('4. URL API :', this.apiUrl);
+// creerOffre(form: NgForm): Observable<string> {
+//   this.erreur = '';
+//   this.message = '';
+//    console.log('1. creerOffre() appelée');
+//   console.log('2. Formulaire valide :', form.valid);
+//   console.log('3. Données offre :', this.offre);
+//   console.log('4. URL API :', this.apiUrl);
 
-  const offre: OffreRequest = {
-    titre: this.offre.titre?.trim() ?? '',
-    description: this.offre.description?.trim() ?? '',
-    domaine: this.offre.domaine?.trim() ?? '',
-    experienceMin: Number(this.offre.experienceMin)
-  };
+//   const offre: OffreRequest = {
+//     titre: this.offre.titre?.trim() ?? '',
+//     description: this.offre.description?.trim() ?? '',
+//     domaine: this.offre.domaine?.trim() ?? '',
+//     experienceMin: Number(this.offre.experienceMin)
+//   };
 
-  // 1. Validation du formulaire
-  if (
-    form.invalid ||
-    !offre.titre ||
-    !offre.description ||
-    !offre.domaine ||
-    !Number.isInteger(offre.experienceMin) ||
-    offre.experienceMin < 0
-  ) {
-    form.control.markAllAsTouched();
+//   // 1. Validation du formulaire
+//   if (
+//     form.invalid ||
+//     !offre.titre ||
+//     !offre.description ||
+//     !offre.domaine ||
+//     !Number.isInteger(offre.experienceMin) ||
+//     offre.experienceMin < 0
+//   ) {
+//     form.control.markAllAsTouched();
 
-    this.erreur =
-      'Vérifiez les champs obligatoires et l’expérience minimale.';
+//     this.erreur =
+//       'Vérifiez les champs obligatoires et l’expérience minimale.';
 
-    return throwError(
-      () => new Error(this.erreur)
-    );
+//     return throwError(
+//       () => new Error(this.erreur)
+//     );
+//   }
+
+//   // 2. Indiquer que la requête est en cours
+//   this.enCours = true;
+
+//   console.log('Envoi de la nouvelle offre :', offre);
+//   console.log('URL API :', this.apiUrl);
+
+//   // 3. Envoyer la requête HTTP
+//   return this.http.post<Offre>(this.apiUrl, offre).pipe(
+//     map(() => {
+//       this.message = 'Offre créée avec succès.';
+//       this.erreur = '';
+
+//       this.offre = {
+//         titre: '',
+//         description: '',
+//         domaine: '',
+//         experienceMin: 0
+//       };
+
+//       return this.message;
+//     }),
+
+//     catchError((error: HttpErrorResponse) => {
+//       console.error('Erreur création offre :', error);
+
+//       this.erreur =
+//         error.error?.message ||
+//         `Erreur HTTP ${error.status} : impossible de créer l’offre.`;
+
+//       return throwError(() => error);
+//     }),
+
+//     finalize(() => {
+//       this.enCours = false;
+//     })
+//   );
+// }
+creerOffre(form: NgForm): Observable<string> { this.erreur = ''; this.message = ''; console.log('1. creerOffre() appelée'); console.log('2. Formulaire valide :', form.valid); console.log('3. Données offre :', this.offre); console.log('4. URL API :', this.apiUrl); const offre: OffreRequest = { titre: this.offre.titre?.trim() ?? '', description: this.offre.description?.trim() ?? '', domaine: this.offre.domaine?.trim() ?? '', experienceMin: Number(this.offre.experienceMin) };
+// Validation
+if ( form.invalid || !offre.titre || !offre.description || !offre.domaine || !Number.isInteger(offre.experienceMin) || offre.experienceMin < 0 ) { form.control.markAllAsTouched(); this.erreur = 'Vérifiez les champs obligatoires et l’expérience minimale.'; return throwError(() => new Error(this.erreur)); }
+this.enCours = true; console.log('Envoi de la nouvelle offre :', offre); return this.http.post<Offre>(this.apiUrl, offre).pipe( map((response: Offre) => { console.log('Offre créée :', response); this.message = 'Offre créée avec succès.'; this.erreur = ''; this.offre = { titre: '', description: '', domaine: '', experienceMin: 0 }; return this.message; }),
+catchError((error: HttpErrorResponse) => { console.error('Erreur création offre :', error); this.erreur = this.getErreurCreation(error); return throwError(() => error); }), finalize(() => { this.enCours = false; }) ); }
+
+
+onSubmit(form: NgForm): void {
+  if (this.enCours) {
+    return;
   }
 
-  // 2. Indiquer que la requête est en cours
-  this.enCours = true;
+  this.creerOffre(form).subscribe({
+    next: (message: string) => {
+      console.log(message);
 
-  console.log('Envoi de la nouvelle offre :', offre);
-  console.log('URL API :', this.apiUrl);
-
-  // 3. Envoyer la requête HTTP
-  return this.http.post<Offre>(this.apiUrl, offre).pipe(
-    map(() => {
-      this.message = 'Offre créée avec succès.';
-      this.erreur = '';
-
-      this.offre = {
-        titre: '',
-        description: '',
-        domaine: '',
-        experienceMin: 0
-      };
-
-      return this.message;
-    }),
-
-    catchError((error: HttpErrorResponse) => {
-      console.error('Erreur création offre :', error);
-
-      this.erreur =
-        error.error?.message ||
-        `Erreur HTTP ${error.status} : impossible de créer l’offre.`;
-
-      return throwError(() => error);
-    }),
-
-    finalize(() => {
-      this.enCours = false;
-    })
-  );
+      // Facultatif : redirection après création
+      // this.router.navigate(['/offres']);
+    },
+    error: (error: unknown) => {
+      console.error('Échec de création :', error);
+    }
+  });
 }
 
-
-  private getErreurCreation(error: HttpErrorResponse): string {
-    if (error.status === 0) {
-      return 'Impossible de joindre l’API. Vérifiez que le backend est démarré et accessible.';
-    }
-
-    const details = error.error;
-    if (typeof details === 'string' && details.trim()) {
-      return details;
-    }
-
-    if (details && typeof details === 'object') {
-      const message = details.message ?? details.detail ?? details.error;
-      if (typeof message === 'string' && message.trim()) {
-        return message;
-      }
-    }
-
-    return `La création de l’offre a échoué (HTTP ${error.status}).`;
+ private getErreurCreation(error: HttpErrorResponse): string {
+  if (error.status === 0) {
+    return 'Impossible de joindre l’API. Vérifiez que le backend est démarré.';
   }
+
+  const details = error.error;
+
+  if (typeof details === 'string' && details.trim()) {
+    return details;
+  }
+
+  if (details && typeof details === 'object') {
+    const message = details.message ?? details.detail ?? details.error;
+
+    if (typeof message === 'string' && message.trim()) {
+      return message;
+    }
+  }
+
+  return `La création de l’offre a échoué (HTTP ${error.status}).`;
+}
   
 }
