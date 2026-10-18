@@ -93,24 +93,45 @@ getCandidature(candidatId: number): Candidature | undefined {
   return this.candidatures.find((c) => c.candidatId === candidatId);
 }
 
+
 modifierStatut(
   candidatureId: number,
   statut: Exclude<StatutCandidature, 'EN_ATTENTE'>
 ): void {
+  const action = statut === 'ACCEPTEE' ? 'accepter' : 'refuser';
+
+  if (!confirm(`Voulez-vous ${action} cette candidature ?`)) {
+    return;
+  }
+
   this.candidatService
     .modifierStatut(candidatureId, statut)
     .subscribe({
-      next: () => {
+      next: (response) => {
         this.candidatures = this.candidatures.map((c) =>
-          c.id === candidatureId ? { ...c, statut } : c
+          c.id === candidatureId
+            ? { ...c, ...response, statut }
+            : c
+        );
+
+        alert(
+          statut === 'ACCEPTEE'
+            ? 'Candidature acceptée. Vérifiez les logs du backend pour confirmer l’envoi de l’e-mail.'
+            : 'Candidature refusée. Vérifiez les logs du backend pour confirmer l’envoi de l’e-mail.'
         );
       },
       error: (erreur) => {
         console.error('Erreur de modification du statut :', erreur);
-        alert('Impossible de modifier le statut de la candidature.');
+
+        const message =
+          erreur?.error?.message ||
+          'Impossible de modifier le statut. Vérifiez le backend et la configuration SMTP.';
+
+        alert(message);
       }
     });
 }
+
 getLibelleStatut(statut: StatutCandidature): string {
   switch (statut) {
     case 'ACCEPTEE': return 'Acceptée';

@@ -1,5 +1,12 @@
-
 :host {
+  --bg: #111827;
+  --bg-hover: #1f2937;
+  --accent: #4f46e5;
+  --text: #dbe4f0;
+  --text-soft: #cbd5e1;
+  --text-muted: #9ca3af;
+  --border: #293244;
+
   display: block;
   flex: 0 0 250px;
 }
@@ -12,42 +19,54 @@
   height: 100vh;
   box-sizing: border-box;
   padding: 24px 16px;
-  color: #dbe4f0;
-  background: #111827;
+  color: var(--text);
+  background: var(--bg);
 }
 
+/* ===== Logo ===== */
 .brand {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 12px;
-  padding: 4px 8px 30px;
+  padding: 4px 8px 20px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
 }
 
-.brand-icon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
+.brand-logo {
+  width: 100%;
+  max-width: 190px;
+  aspect-ratio: 5 / 2;          /* cadre large qui rogne le blanc du haut et du bas */
+  overflow: hidden;
+  background: #fff;
   border-radius: 12px;
-  background: #4f46e5;
-  color: white;
-  font-size: 22px;
-  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-.brand h2 {
-  margin: 0;
-  color: white;
-  font-size: 16px;
-}
-
-.brand span {
+.brand-logo img {
   display: block;
-  margin-top: 5px;
-  color: #9ca3af;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.brand-text h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.brand-text span {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-muted);
   font-size: 11px;
 }
 
+/* ===== Menu ===== */
 .menu-label {
   margin: 10px 8px 12px;
   color: #8995a7;
@@ -67,19 +86,24 @@ nav a {
   gap: 12px;
   padding: 13px 12px;
   border-radius: 9px;
-  color: #cbd5e1;
+  color: var(--text-soft);
   font-size: 14px;
   text-decoration: none;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 nav a:hover {
-  background: #1f2937;
+  background: var(--bg-hover);
+}
+
+nav a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 nav a.active {
-  color: white;
-  background: #4f46e5;
+  color: #fff;
+  background: var(--accent);
 }
 
 .menu-icon {
@@ -88,6 +112,7 @@ nav a.active {
   font-size: 18px;
 }
 
+/* ===== Pied de page ===== */
 .sidebar-footer {
   display: grid;
   grid-template-columns: 10px 1fr;
@@ -95,7 +120,7 @@ nav a.active {
   gap: 4px 8px;
   margin-top: auto;
   padding: 14px 8px;
-  border-top: 1px solid #293244;
+  border-top: 1px solid var(--border);
   font-size: 11px;
 }
 
@@ -108,20 +133,20 @@ nav a.active {
 
 .sidebar-footer small {
   grid-column: 2;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
+/* ===== Mobile ===== */
 @media (max-width: 768px) {
   :host {
     flex-basis: 190px;
   }
 
-  .brand {
-    padding-left: 0;
-    gap: 8px;
+  .brand-logo {
+    max-width: 150px;
   }
 
-  .brand h2 {
+  .brand-text h2 {
     font-size: 13px;
   }
 }
