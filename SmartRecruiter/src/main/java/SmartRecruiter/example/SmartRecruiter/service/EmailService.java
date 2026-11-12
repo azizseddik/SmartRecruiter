@@ -2,7 +2,7 @@ package SmartRecruiter.example.SmartRecruiter.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
 
 
@@ -38,6 +38,28 @@ public class EmailService {
                 + "Cordialement,\n"
                 + "L'équipe SmartRecruiter";
         envoyer(destinataire, sujet, texte);
+    }
+    public void envoyerAccuseReception(String dest, String nom, String poste) {
+        envoyer(dest, "Nous avons bien reçu votre candidature",
+                "Bonjour " + nom + ",\n\nNous avons bien reçu votre candidature pour le poste « " + poste + " ».\n"
+                        + "Votre dossier est en cours d'étude. Nous reviendrons vers vous prochainement.\n\n"
+                        + "Cordialement,\nL'équipe SmartRecruiter");
+    }
+
+    public void envoyerEntretien(String dest, String nom, String poste) {
+        envoyer(dest, "Votre dossier est retenu pour un entretien",
+                "Bonjour " + nom + ",\n\nAprès étude de votre dossier, votre candidature pour le poste « " + poste
+                        + " » a été retenue et transmise au département technique en vue d'un entretien.\n"
+                        + "Nous vous contacterons prochainement pour convenir d'une date.\n\n"
+                        + "Cordialement,\nL'équipe SmartRecruiter");
+    }
+
+    public void envoyerRefusApresEntretien(String dest, String nom, String poste) {
+        envoyer(dest, "Suite à votre entretien",
+                "Bonjour " + nom + ",\n\nNous vous remercions d'avoir participé à l'entretien pour le poste « " + poste + " ».\n"
+                        + "Après réflexion, nous sommes au regret de vous informer que votre candidature n'a pas été retenue.\n"
+                        + "Nous vous souhaitons plein succès dans la suite de vos démarches.\n\n"
+                        + "Cordialement,\nL'équipe SmartRecruiter");
     }
 
     private void envoyer(String destinataire, String sujet, String texte) {

@@ -6,19 +6,29 @@
       <span class="eyebrow">GESTION DES TALENTS</span>
       <h2>Candidats</h2>
       <p>
-        Consultez les profils, importez des CV et classez les candidats
-        selon les besoins de chaque offre.
+        Consultez les candidatures, importez des CV et évaluez
+        les profils selon les besoins de chaque offre.
       </p>
     </div>
 
-    <button
-      type="button"
-      class="refresh-button"
-      (click)="chargerCandidats()"
-      [disabled]="chargement"
-    >
-      ↻ Actualiser
-    </button>
+    <div class="heading-actions">
+      <!-- SÉLECTEUR DE RÔLE (provisoire, remplacé par le JWT plus tard) -->
+      <div class="role-switch">
+        <label for="role">Connecté en tant que</label>
+        <select id="role" name="role" [(ngModel)]="role">
+          <option value="RH">RH</option>
+          <option value="MANAGER">Manager</option>
+        </select>
+      </div>
+
+      <button
+        type="button"
+        class="refresh-button"
+        (click)="chargerCandidats()"
+        [disabled]="chargement">
+        ↻ Actualiser
+      </button>
+    </div>
   </section>
 
   <!-- IMPORTATION D'UN CV -->
@@ -27,23 +37,27 @@
       <span class="eyebrow">IMPORTATION INTELLIGENTE</span>
       <h3>Importer un CV PDF</h3>
       <p>
-        Sélectionnez une offre et importez le CV pour créer une candidature
-        et évaluer la compatibilité du profil.
+        Sélectionnez une offre et importez un CV pour créer
+        une candidature et calculer le matching.
       </p>
     </div>
 
-    <form class="import-form" (ngSubmit)="importerCV()">
+    <form
+      class="import-form"
+      (ngSubmit)="importerCV()">
 
       <div class="form-field">
-        <label for="offreId">Offre de recrutement</label>
+        <label for="offreId">
+          Offre de recrutement
+        </label>
 
         <select
           id="offreId"
           name="offreId"
-          [(ngModel)]="offreIdSelectionnee"
-          (ngModelChange)="chargerClassement()"
-          required
-        >
+          [ngModel]="offreIdSelectionnee"
+          (ngModelChange)="selectionnerOffre($event)"
+          required>
+
           <option [ngValue]="null">
             Sélectionner une offre
           </option>
@@ -60,20 +74,23 @@
         }
 
         @if (erreurOffres) {
-          <small class="error-text">{{ erreurOffres }}</small>
+          <small class="error-text">
+            {{ erreurOffres }}
+          </small>
 
           <button
             type="button"
             class="secondary-button"
-            (click)="chargerOffres()"
-          >
+            (click)="chargerOffres()">
             Réessayer
           </button>
         }
       </div>
 
       <div class="form-field">
-        <label for="fichierCV">CV du candidat (PDF, 10 Mo maximum)</label>
+        <label for="fichierCV">
+          CV du candidat (PDF, 10 Mo maximum)
+        </label>
 
         <input
           id="fichierCV"
@@ -81,11 +98,12 @@
           type="file"
           accept=".pdf,application/pdf"
           (change)="selectionnerFichier($event)"
-          required
-        />
+          required />
 
         @if (fichierCV) {
-          <small>Fichier sélectionné : {{ fichierCV.name }}</small>
+          <small>
+            Fichier sélectionné : {{ fichierCV.name }}
+          </small>
         }
       </div>
 
@@ -95,9 +113,11 @@
         [disabled]="
           importEnCours ||
           chargementOffres ||
-          offres.length === 0
-        "
-      >
+          offres.length === 0 ||
+          offreIdSelectionnee === null ||
+          !fichierCV
+        ">
+
         @if (importEnCours) {
           Analyse et importation en cours...
         } @else {
@@ -108,38 +128,42 @@
     </form>
 
     @if (erreurImport) {
-      <div class="feedback feedback-error" role="alert">
+      <div
+        class="feedback feedback-error"
+        role="alert">
         {{ erreurImport }}
       </div>
     }
 
     @if (messageImport) {
-      <div class="feedback feedback-success" role="status">
+      <div
+        class="feedback feedback-success"
+        role="status">
         {{ messageImport }}
       </div>
     }
   </section>
 
-  <!-- RÉSUMÉ DES CANDIDATS -->
+  <!-- RÉSUMÉ -->
   <section class="summary-card">
     <div class="summary-icon">♙</div>
 
     <div>
-      <span>Total des candidats affichés</span>
+      <span>Total des candidats enregistrés</span>
       <strong>{{ candidats.length }}</strong>
     </div>
   </section>
 
-  <!-- CLASSEMENT INTELLIGENT -->
+  <!-- TABLEAU DES CANDIDATURES -->
   <section class="table-panel ranking-panel">
 
     <div class="table-toolbar">
       <div>
-        <span class="eyebrow">MATCHING</span>
-        <h3>Classement intelligent</h3>
+        <span class="eyebrow">RECRUTEMENT</span>
+        <h3>Candidatures reçues</h3>
         <p>
-          Les candidats sont classés selon leur score de compatibilité
-          avec l'offre sélectionnée.
+          Seuls les candidats ayant une candidature pour l'offre
+          sélectionnée sont affichés.
         </p>
       </div>
 
@@ -147,19 +171,21 @@
         type="button"
         class="refresh-button"
         (click)="chargerClassement()"
-        [disabled]="offreIdSelectionnee === null || chargementClassement"
-      >
-        ↻ Actualiser le classement
+        [disabled]="
+          offreIdSelectionnee === null ||
+          chargementClassement
+        ">
+        ↻ Actualiser
       </button>
     </div>
 
     @if (offreIdSelectionnee === null) {
       <div class="message-state">
-        Sélectionnez une offre pour afficher son classement.
+        Sélectionnez une offre pour afficher les candidatures.
       </div>
     } @else if (chargementClassement) {
       <div class="message-state">
-        Calcul du classement...
+        Chargement des candidatures et du matching...
       </div>
     } @else if (erreurClassement) {
       <div class="message-state error-state">
@@ -167,14 +193,13 @@
 
         <button
           type="button"
-          (click)="chargerClassement()"
-        >
+          (click)="chargerClassement()">
           Réessayer
         </button>
       </div>
-    } @else if (classement.length === 0) {
+    } @else if (candidatures.length === 0) {
       <div class="message-state">
-        Aucun résultat de matching pour cette offre.
+        Aucune candidature reçue pour cette offre.
       </div>
     } @else {
 
@@ -182,145 +207,196 @@
         <table>
           <thead>
             <tr>
-              <th>Rang</th>
-              <th>Candidat</th>
-              <th>Score</th>
-              <th>Évaluation</th>
-              <th>Compétences satisfaites</th>
-              <th>Compétences manquantes</th>
-              <th>Statut</th>
-              <th>Actions</th>
+              <th scope="col">Candidat</th>
+              <th scope="col">Études</th>
+              <th scope="col">Établissement</th>
+              <th scope="col">Compétences</th>
+              <th scope="col">Matching</th>
+              <th scope="col">Statut</th>
+              <th scope="col">CV</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            @for (resultat of classement; track resultat.candidatId) {
-              <tr>
-                <td>
-                  <strong>#{{ $index + 1 }}</strong>
-                </td>
+            @for (candidature of candidatures; track candidature.id) {
+              @if (candidature.statut) {
+                <tr>
 
-                <td>
-                  <strong>
-                    {{ getNomCandidat(resultat.candidatId) }}
-                  </strong>
+                  <!-- CANDIDAT -->
+                  <td>
+                    <div class="candidate-cell">
+                      <div class="avatar">
+                        {{
+                          getNomPourCandidature(candidature)
+                            .charAt(0).toUpperCase()
+                        }}
+                      </div>
 
-                  <small class="candidate-id">
-                    ID : {{ resultat.candidatId }}
-                  </small>
-                </td>
+                      <div>
+                        <strong>
+                          {{ getNomPourCandidature(candidature) }}
+                        </strong>
 
-                <td>
-                  <span
-                    class="score-badge"
-                    [ngClass]="getClasseScore(resultat.score)"
-                  >
-                    {{ resultat.score }} %
-                  </span>
-                </td>
-
-                <td>{{ resultat.resultat }}</td>
-
-                <td>
-                  @if (resultat.competencesSatisfaites?.length) {
-                    <div class="skill-list">
-                      @for (
-                        skill of resultat.competencesSatisfaites;
-                        track skill
-                      ) {
-                        <span class="skill-tag skill-ok">
-                          {{ skill }}
-                        </span>
-                      }
+                        <small>
+                          ID : {{ candidature.candidatId }}
+                        </small>
+                      </div>
                     </div>
-                  } @else {
-                    <span>—</span>
-                  }
-                </td>
+                  </td>
 
-                <td>
-                  @if (resultat.competencesManquantes?.length) {
-                    <div class="skill-list">
-                      @for (
-                        skill of resultat.competencesManquantes;
-                        track skill
-                      ) {
-                        <span class="skill-tag skill-missing">
-                          {{ skill }}
-                        </span>
-                      }
-                    </div>
-                  } @else {
-                    <span>—</span>
-                  }
-                </td>
+                  <!-- ÉTUDES -->
+                  <td>
+                    {{ afficherEtudes(candidature) }}
+                  </td>
 
-                <!-- STATUT DE LA CANDIDATURE -->
-                <td>
-                  @if (getCandidature(resultat.candidatId); as candidature) {
+                  <!-- ÉTABLISSEMENT -->
+                  <td>
+                    {{ afficherEtablissements(candidature) }}
+                  </td>
+
+                  <!-- COMPÉTENCES -->
+                  <td>
+                    @if (candidature.competences?.length) {
+                      <div class="skill-list">
+                        @for (
+                          competence of candidature.competences;
+                          track $index
+                        ) {
+                          <span class="skill-tag">
+                            {{ competence }}
+                          </span>
+                        }
+                      </div>
+                    } @else {
+                      <span class="empty-cell">
+                        Non renseignées
+                      </span>
+                    }
+                  </td>
+
+                  <!-- MATCHING -->
+                  <td>
+                    @if (
+                      getResultatMatching(candidature.candidatId);
+                      as resultat
+                    ) {
+                      <span
+                        class="score-badge"
+                        [ngClass]="getClasseScore(resultat.score)">
+                        {{ resultat.score }} %
+                      </span>
+                    } @else {
+                      <span class="empty-cell">—</span>
+                    }
+                  </td>
+
+                  <!-- STATUT -->
+                  <td>
                     <span
                       class="statut-tag"
-                      [ngClass]="'statut-' + candidature.statut.toLowerCase()"
-                    >
+                      [ngClass]="
+                        'statut-' + candidature.statut.toLowerCase()
+                      ">
                       {{ getLibelleStatut(candidature.statut) }}
                     </span>
-                  } @else {
-                    <span>—</span>
-                  }
-                </td>
+                  </td>
 
-                <!-- ACTIONS : ACCEPTER / REJETER -->
-                <td>
-                  @if (getCandidature(resultat.candidatId); as candidature) {
+                  <!-- CV -->
+                  <td>
+                    @if (candidature.cheminCV) {
+                      <a
+                        [href]="getCvUrl(candidature)"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn-voir-cv"
+                        title="Voir le CV"
+                        aria-label="Voir le CV">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                          <polyline points="14 2 14 8 20 8"/>
+                          <line x1="8" y1="13" x2="16" y2="13"/>
+                          <line x1="8" y1="17" x2="16" y2="17"/>
+                        </svg>
+                      </a>
+                    } @else {
+                      <span class="empty-cell" title="CV indisponible">—</span>
+                    }
+                  </td>
+
+                  <!-- ACTIONS : circuit RH → Manager → RH -->
+                  <td>
                     <div class="status-actions">
-                      <button
-                        type="button"
-                        class="status-button accept-button"
-                        (click)="modifierStatut(candidature.id, 'ACCEPTEE')"
-                        [disabled]="candidature.statut === 'ACCEPTEE'"
-                      >
-                        Accepter
-                      </button>
+                      @if (estFinal(candidature)) {
+                        <span
+                          class="final-state"
+                          title="Cette décision est définitive">
+                          🔒 Décision finale
+                        </span>
+                      } @else if (peutDecider(candidature)) {
+                        <button
+                          type="button"
+                          class="status-button accept-button"
+                          (click)="modifierStatut(candidature.id, true)"
+                          [disabled]="statutEnCours === candidature.id">
+                          {{ libelleBoutonAccepter(candidature) }}
+                        </button>
 
-                      <button
-                        type="button"
-                        class="status-button reject-button"
-                        (click)="modifierStatut(candidature.id, 'REJETEE')"
-                        [disabled]="candidature.statut === 'REJETEE'"
-                      >
-                        Rejeter
-                      </button>
+                        <button
+                          type="button"
+                          class="status-button reject-button"
+                          (click)="modifierStatut(candidature.id, false)"
+                          [disabled]="statutEnCours === candidature.id">
+                          Rejeter
+                        </button>
+                      } @else {
+                        <span class="empty-cell">
+                          En attente :
+                          {{ candidature.statut === 'ENTRETIEN' ? 'manager' : 'RH' }}
+                        </span>
+                      }
                     </div>
-                  } @else {
-                    <span>—</span>
-                  }
-                </td>
-              </tr>
+                  </td>
+
+                </tr>
+              }
             }
           </tbody>
         </table>
       </div>
-
     }
   </section>
 
-  <!-- RECHERCHE ET LISTE DES CANDIDATS -->
+  <!-- RECHERCHE ET LISTE GÉNÉRALE DES CANDIDATS -->
   <section class="table-panel">
 
     <div class="table-toolbar">
       <div>
-        <h3>Liste des candidats</h3>
-        <p>Les données proviennent de l'API Spring Boot.</p>
+        <h3>Liste des candidats enregistrés</h3>
+        <p>
+          Tous les profils présents dans la base de données.
+        </p>
       </div>
 
-      <form class="search-form" (ngSubmit)="rechercher()">
+      <form
+        class="search-form"
+        (ngSubmit)="rechercher()">
+
         <input
           type="text"
           name="recherche"
           [(ngModel)]="recherche"
           placeholder="Rechercher un candidat..."
-          aria-label="Rechercher un candidat"
-        />
+          aria-label="Rechercher un candidat" />
 
         <button type="submit">
           Rechercher
@@ -330,8 +406,7 @@
           <button
             type="button"
             class="clear-button"
-            (click)="reinitialiserRecherche()"
-          >
+            (click)="reinitialiserRecherche()">
             Effacer
           </button>
         }
@@ -348,14 +423,13 @@
 
         <button
           type="button"
-          (click)="chargerCandidats()"
-        >
+          (click)="chargerCandidats()">
           Réessayer
         </button>
       </div>
     } @else if (candidats.length === 0) {
       <div class="message-state">
-        Aucun candidat trouvé. Vérifiez votre recherche ou importez un CV.
+        Aucun candidat trouvé.
       </div>
     } @else {
 
@@ -363,17 +437,18 @@
         <table>
           <thead>
             <tr>
-              <th>Candidat</th>
-              <th>Email</th>
-              <th>Téléphone</th>
-              <th>Domaine</th>
-              <th>Expérience</th>
+              <th scope="col">Candidat</th>
+              <th scope="col">Email</th>
+              <th scope="col">Téléphone</th>
+              <th scope="col">Domaine</th>
+              <th scope="col">Expérience</th>
             </tr>
           </thead>
 
           <tbody>
             @for (candidat of candidats; track candidat.id) {
               <tr>
+
                 <td>
                   <div class="candidate-cell">
                     <div class="avatar">
@@ -385,13 +460,19 @@
                     </div>
 
                     <div>
-                      <strong>{{ candidat.nom || 'Sans nom' }}</strong>
-                      <small>ID : {{ candidat.id }}</small>
+                      <strong>
+                        {{ candidat.nom || 'Sans nom' }}
+                      </strong>
+
+                      <small>
+                        ID : {{ candidat.id }}
+                      </small>
                     </div>
                   </div>
                 </td>
 
                 <td>{{ candidat.email || '—' }}</td>
+
                 <td>{{ candidat.telephone || '—' }}</td>
 
                 <td>
@@ -400,13 +481,15 @@
                   </span>
                 </td>
 
-                <td>{{ candidat.experience ?? 0 }} an(s)</td>
+                <td>
+                  {{ candidat.experience ?? 0 }} an(s)
+                </td>
+
               </tr>
             }
           </tbody>
         </table>
       </div>
-
     }
   </section>
 

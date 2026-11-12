@@ -18,6 +18,17 @@ public class Candidat {
         return candidatures;
     }
 
+    public List<Formation> getFormations() {
+        return formations;
+    }
+
+    public void setFormations(List<Formation> formations) {
+        this.formations = formations;
+    }
+
+    @OneToMany(mappedBy = "candidat", cascade = CascadeType.ALL)
+    private List<Formation> formations = new ArrayList<>();
+
     public void setCandidatures(List<Candidature> candidatures) {
         this.candidatures = candidatures;
     }

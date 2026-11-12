@@ -2,12 +2,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+export interface Formation {
+  diplome: string | null;
+  etablissement: string | null;
+  anneeDebut: string | null;
+  anneeFin: string | null;
+}
 export type StatutCandidature =
-  | 'EN_ATTENTE'
-  | 'ACCEPTEE'
-  | 'REJETEE';
-
+  'EN_ATTENTE' | 'ENTRETIEN' | 'VALIDATION_RH' |
+  'REFUSE_ENTRETIEN' | 'ACCEPTEE' | 'REJETEE';
+export type RoleUtilisateur = 'RH' | 'MANAGER'
 export interface Candidat {
   id: number;
   nom: string;
@@ -19,12 +23,18 @@ export interface Candidat {
 }
 
 export interface Candidature {
-  id: number;
+id: number;
   candidatId: number;
+  nomCandidat: string;
+  emailCandidat: string;
   offreId: number;
-  statut: StatutCandidature;
-  scoreMatching: number | null;
   titreOffre: string;
+  formations: Formation[];
+  competences: string[];
+  scoreMatching: number | null;
+  statut: StatutCandidature;
+  cheminCV: string | null;
+  dateCandidature: string;
 }
 
 @Injectable({
@@ -60,13 +70,15 @@ export class CandidatService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  modifierStatut(
-    id: number,
-    statut: StatutCandidature
-  ): Observable<Candidature> {
-    return this.http.patch<Candidature>(
-      `${this.candidatureUrl}/${id}/statut`,
-      { statut }
-    );
-  }
-}
+modifierStatut(
+  id: number,
+  statut: StatutCandidature,
+  role: RoleUtilisateur
+): Observable<Candidature> {
+  return this.http.patch<Candidature>(
+    `${this.apiUrl}/candidatures/${id}/statut`,
+    { statut },
+    { headers: { 'X-Role': role } }
+  );
+
+} }

@@ -1,6 +1,9 @@
 package SmartRecruiter.example.SmartRecruiter.Entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
+import java.util.Set;
+
 @Entity
 @Table(
         name = "candidatures",
@@ -11,11 +14,42 @@ import java.time.LocalDateTime;
                 )
         }
 )
-public class Candidature {   public enum Statut {
-    EN_ATTENTE,
-    ACCEPTEE,
-    REJETEE
-}
+public class Candidature {
+    public enum Statut {
+        EN_ATTENTE,
+        ENTRETIEN,          // en attente du manager
+        VALIDATION_RH,      // le manager a validé, le RH décide
+        REFUSE_ENTRETIEN,
+        ACCEPTEE,
+        REJETEE;
+
+        public java.util.Set<Statut> suivants() {
+            return switch (this) {
+                case EN_ATTENTE ->
+                        java.util.EnumSet.of(ENTRETIEN, REJETEE);
+                case ENTRETIEN ->
+                        java.util.EnumSet.of(VALIDATION_RH, REFUSE_ENTRETIEN);
+                case VALIDATION_RH ->
+                        java.util.EnumSet.of(ACCEPTEE, REFUSE_ENTRETIEN);
+                default ->
+                        java.util.EnumSet.noneOf(Statut.class);
+            };
+        }
+
+        /** Rôle autorisé à agir quand la candidature est dans ce statut (null = final). */
+        public String roleAutorise() {
+            return switch (this) {
+                case EN_ATTENTE, VALIDATION_RH -> "RH";
+                case ENTRETIEN -> "MANAGER";
+                default -> null;
+            };
+        }
+
+        public boolean estFinal() {
+            return suivants().isEmpty();
+        }
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +64,7 @@ public class Candidature {   public enum Statut {
     private Offre offre;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30, columnDefinition = "VARCHAR(30)")
     private Statut statut = Statut.EN_ATTENTE;
 
     private Double scoreMatching;
